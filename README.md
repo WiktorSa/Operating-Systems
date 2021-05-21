@@ -38,4 +38,4 @@ Implemented algorithms:
 4. Working Set
 
 
-
+# More details are visible in the file tasks.pdf (in Polish language)
