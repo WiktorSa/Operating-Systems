@@ -37,5 +37,11 @@ Implemented algorithms:
 3. Page Fault Frequency
 4. Working Set
 
+# 5. Simulation 5 - OS5
+Implement 3 algorithms that simulate the way processes can be distributed to processors:
+Implemented algorithms:
+1. Algorithm in which the process firstly tries to be executed on other processors than the original processor and in the end gets executed on the original processor
+2. Algorithm in which the process firstly tries to be executed on the original processor and later if needed searches for another processor
+3. Improvement of algorithm 2. Processors that have a very small load try to take some processes from processors with a very high load
 
 # More details are visible in the file tasks.pdf (in Polish language)
