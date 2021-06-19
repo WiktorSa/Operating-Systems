@@ -2,7 +2,7 @@
 Simulations made for Operating Systems course (laboratory) at the Wrocław University of Science and Technology (Politechnika Wroclawska)
 Every algorithm is implement in Python 3.9
 
-# 1. Simulation 1 - SO1
+# 1. Simulation 1 - OS1
 Implement algorithms that schedule access to the CPU for upcoming processes. Perform simulation and calculate the average waiting time for every algorithm:
 Implemented algorithms:
 1. First Come First Served
