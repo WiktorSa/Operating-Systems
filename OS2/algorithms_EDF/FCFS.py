@@ -23,10 +23,10 @@ class FCFS(Algorithm):
         no_request_wait_arrival = 1
         no_r_request_wait_arrival = 0
         # We will display the last 10 requests to finish to show some of the algorithms weaknesses
-        finished_requests = np.empty(len(requests), dtype=Request)
+        finished_requests = np.empty(shape=len(requests) + len(r_requests), dtype=Request)
         no_finished_request = 0
 
-        while no_finished_request < len(requests):
+        while no_finished_request < len(finished_requests):
             # Add requests that have arrived to the queue of requests
             while no_request_wait_arrival != len(requests) and \
                     requests[no_request_wait_arrival].arrival_time == no_of_seek_operations:
@@ -60,11 +60,11 @@ class FCFS(Algorithm):
             for r_request in waiting_r_requests:
                 r_request.waiting_time += 1
                 # If deadline time has passed we just get rid of this process
-                if r_request.waiting_time > real_request.deadline_time:
+                if r_request.waiting_time > r_request.deadline_time:
                     no_of_rejected_r_requests += 1
                     finished_requests[no_finished_request] = r_request
                     no_finished_request += 1
-                    waiting_real_time_requests.remove(r_request)
+                    waiting_r_requests.remove(r_request)
 
             # The request has been finished
             if disc.current_position == current_request.block_position:

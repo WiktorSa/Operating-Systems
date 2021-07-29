@@ -22,7 +22,7 @@ class SSTF(Algorithm):
         finished_requests = np.empty(len(requests), dtype=Request)
         no_finished_request = 0
 
-        while no_finished_request < len(requests):
+        while no_finished_request < len(finished_requests):
             # Add requests that have arrived to the queue of requests
             while no_request_wait_arrival != len(requests) and \
                     requests[no_request_wait_arrival].arrival_time == no_of_seek_operations:

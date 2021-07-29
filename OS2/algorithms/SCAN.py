@@ -25,7 +25,7 @@ class SCAN(Algorithm):
         # In which direction to move
         move = self.move
 
-        while no_finished_request < len(requests):
+        while no_finished_request < len(finished_requests):
             # Add requests that have arrived to the queue of requests
             while no_request_wait_arrival != len(requests) and \
                     requests[no_request_wait_arrival].arrival_time == no_of_seek_operations:

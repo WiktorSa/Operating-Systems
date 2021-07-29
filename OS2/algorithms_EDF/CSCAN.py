@@ -4,26 +4,30 @@ from disc.Disc import Disc
 from algorithms_EDF.Algorithm import Algorithm
 
 
-# Shortest Seek Time First
-class SSTF(Algorithm):
-    def __init__(self, no_simulations: int):
+class CSCAN(Algorithm):
+    def __init__(self, no_simulations: int, is_going_right: bool):
         super().__init__(no_simulations)
+        # In which direction to move
+        if is_going_right:
+            self.move = 1
+        else:
+            self.move = -1
 
     def perform_simulaton(self, requests: np.array, r_requests: np.array, disc: Disc):
         # Number of reject real time requests
         no_of_rejected_r_requests = 0
-        # Our current request
-        current_request = requests[0]
+        # Fake request (made so EDF works)
+        current_request = None
         # How many seek operations we did. This will also work as a time measurement in this task
         no_of_seek_operations = 0
         # All the requests that are waiting for execution
         waiting_requests = []
         waiting_r_requests = []
         # The index of the first request in requests that is not in requests waiting line
-        no_request_wait_arrival = 1
+        no_request_wait_arrival = 0
         no_r_request_wait_arrival = 0
         # We will display the last 10 requests to finish to show some of the algorithms weaknesses
-        finished_requests = np.empty(shape=len(requests) + len(r_requests), dtype=Request)
+        finished_requests = np.empty(len(requests) + len(r_requests), dtype=Request)
         no_finished_request = 0
 
         while no_finished_request < len(finished_requests):
@@ -40,18 +44,18 @@ class SSTF(Algorithm):
                 no_r_request_wait_arrival += 1
 
             # Processing the real time requests (EDF algorithm)
-            if len(waiting_r_requests) > 0:
-                waiting_requests.insert(0, current_request)
+            if len(waiting_r_requests) > 0 and current_request is None:
                 current_request = waiting_r_requests.pop(0)
 
             # Move the disc in the proper direction
-            disc.current_position += np.sign(current_request.block_position - disc.current_position)
+            if current_request is not None:
+                disc.current_position += np.sign(current_request.block_position - disc.current_position)
+
+            else:
+                disc.current_position += self.move
 
             # The disk has moved once
             no_of_seek_operations += 1
-
-            # Increase waiting time for the request
-            current_request.waiting_time += 1
 
             # Increasing waiting time for all waiting_requests
             for request in waiting_requests:
@@ -66,34 +70,45 @@ class SSTF(Algorithm):
                     no_finished_request += 1
                     waiting_r_requests.remove(r_request)
 
-            # The request has been finished
-            if disc.current_position == current_request.block_position:
-                finished_requests[no_finished_request] = current_request
-                no_finished_request += 1
+            if current_request is not None:
+                # Real time request is finished or ran out of time
+                if disc.current_position == current_request.block_position or \
+                        current_request.waiting_time > current_request.deadline_time:
+                    if current_request.waiting_time > current_request.deadline_time:
+                        no_of_rejected_r_requests += 1
 
-                if len(waiting_r_requests) != 0:
-                    current_request = waiting_r_requests.pop(
-                        self.get_argmin_distance_r_requests(waiting_r_requests, disc))
+                    finished_requests[no_finished_request] = current_request
+                    no_finished_request += 1
 
-                elif len(waiting_requests) != 0:
-                    current_request = waiting_requests.pop(
-                        self.get_argmin_distance(waiting_requests, disc))
+                    if len(waiting_r_requests) != 0:
+                        current_request = waiting_r_requests.pop(
+                            self.get_argmin_distance_r_requests(waiting_r_requests, disc))
 
-            # The real time requests just ran out of time
-            if current_request.is_real_time and current_request.waiting_time > current_request.deadline_time:
-                finished_requests[no_finished_request] = current_request
-                no_finished_request += 1
-                no_of_rejected_r_requests += 1
+                    else:
+                        current_request = None
 
-                if len(waiting_r_requests) != 0:
-                    current_request = waiting_r_requests.pop(
-                        self.get_argmin_distance_r_requests(waiting_r_requests, disc))
+            else:
+                # Searching for all requests that will be done when the disc is on the given position
+                for request in waiting_requests:
+                    if disc.current_position == request.block_position:
+                        finished_requests[no_finished_request] = request
+                        no_finished_request += 1
+                        waiting_requests.remove(request)
 
-                elif len(waiting_requests) != 0:
-                    current_request = waiting_requests.pop(
-                        self.get_argmin_distance(waiting_requests, disc))
+                # Move disc to the opposite side
+                if disc.current_position == 0:
+                    disc.current_position = disc.size_of_disc
 
-        print("SSTF-EDF last 15 finished requests")
+                if disc.current_position == disc.size_of_disc:
+                    disc.current_position = 0
+
+                for request in waiting_requests:
+                    if disc.current_position == request.block_position:
+                        finished_requests[no_finished_request] = request
+                        no_finished_request += 1
+                        waiting_requests.remove(request)
+
+        print("CSCAN-EDF last 15 finished requests")
         for i in range(1, 16):
             print(finished_requests[-i])
 
@@ -104,14 +119,3 @@ class SSTF(Algorithm):
 
         self.overall_no_of_seek_operations += no_of_seek_operations
         self.overall_no_of_rejected_r_requests += no_of_rejected_r_requests
-
-    # Finding the next request that is the closest to the disc current position
-    @staticmethod
-    def get_argmin_distance(wait_requests: list, disc: Disc):
-        min_index = 0
-        for i in range(1, len(wait_requests)):
-            if abs(disc.current_position - wait_requests[min_index].block_position) > \
-                    abs(disc.current_position - wait_requests[i].block_position):
-                min_index = i
-
-        return min_index

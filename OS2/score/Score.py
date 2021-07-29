@@ -20,6 +20,8 @@ def Score(no_cycles: int, no_requests: int, no_real_requests: int, entrance_posi
     cscan = algorithms.CSCAN(no_cycles, is_going_right)
     fcfs_edf = algorithms_EDF.FCFS(no_cycles)
     sstf_edf = algorithms_EDF.SSTF(no_cycles)
+    scan_edf = algorithms_EDF.SCAN(no_cycles, is_going_right)
+    cscan_edf = algorithms_EDF.CSCAN(no_cycles, is_going_right)
 
     for i in range(no_cycles):
         # Generating processes
@@ -67,6 +69,8 @@ def Score(no_cycles: int, no_requests: int, no_real_requests: int, entrance_posi
         cscan.perform_simulaton(copy.deepcopy(requests), copy.deepcopy(disc))
         fcfs_edf.perform_simulaton(copy.deepcopy(requests), copy.deepcopy(real_time_requests), copy.deepcopy(disc))
         sstf_edf.perform_simulaton(copy.deepcopy(requests), copy.deepcopy(real_time_requests), copy.deepcopy(disc))
+        scan_edf.perform_simulaton(copy.deepcopy(requests), copy.deepcopy(real_time_requests), copy.deepcopy(disc))
+        cscan_edf.perform_simulaton(copy.deepcopy(requests), copy.deepcopy(real_time_requests), copy.deepcopy(disc))
 
         print("Cycle " + str(i) + " finished\n")
 
@@ -78,3 +82,7 @@ def Score(no_cycles: int, no_requests: int, no_real_requests: int, entrance_posi
     print("FCFS-EDF average rejected real time requests: ", fcfs_edf.get_results_many_simulations_rejected())
     print("SSTF-EDF average: ", sstf_edf.get_results_many_simulations())
     print("SSTF-EDF average rejected real time requests: ", sstf_edf.get_results_many_simulations_rejected())
+    print("SCAN-EDF average: ", scan_edf.get_results_many_simulations())
+    print("SCAN-EDF average rejected real time requests: ", scan_edf.get_results_many_simulations_rejected())
+    print("CSCAN-EDF average: ", cscan_edf.get_results_many_simulations())
+    print("CSCAN-EDF average rejected real time requests: ", cscan_edf.get_results_many_simulations_rejected())
