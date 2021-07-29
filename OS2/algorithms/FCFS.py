@@ -38,17 +38,17 @@ class FCFS(Algorithm):
             # Increase waiting time for the request
             current_request.waiting_time += 1
 
+            # Increasing waiting time for all waiting_requests
+            for request in waiting_requests:
+                request.waiting_time += 1
+
             # The request has been finished
             if disc.current_position == current_request.block_position:
                 finished_requests[no_finished_request] = current_request
                 no_finished_request += 1
 
-                if no_finished_request < len(requests):
+                if len(waiting_requests) != 0:
                     current_request = waiting_requests.pop(0)
-
-            # Increasing waiting time for all waiting_requests
-            for request in waiting_requests:
-                request.waiting_time += 1
 
         print("FCFS last 15 finished requests")
         for i in range(1, 16):

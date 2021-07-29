@@ -1,9 +1,7 @@
 from disc.Disc import Disc
 from request.Request import Request
-from algorithms.FCFS import FCFS
-from algorithms.SSTF import SSTF
-from algorithms.SCAN import SCAN
-from algorithms.CSCAN import CSCAN
+import algorithms
+import algorithms_EDF
 import numpy as np
 import random
 import copy
@@ -16,10 +14,12 @@ def Score(no_cycles: int, no_requests: int, no_real_requests: int, entrance_posi
     real_time_requests = np.empty(shape=no_real_requests, dtype=Request)
     disc = Disc(entrance_position, size_of_disc)
 
-    fcfs = FCFS(no_cycles)
-    sstf = SSTF(no_cycles)
-    scan = SCAN(no_cycles, is_going_right)
-    cscan = CSCAN(no_cycles, is_going_right)
+    fcfs = algorithms.FCFS(no_cycles)
+    sstf = algorithms.SSTF(no_cycles)
+    scan = algorithms.SCAN(no_cycles, is_going_right)
+    cscan = algorithms.CSCAN(no_cycles, is_going_right)
+    fcfs_edf = algorithms_EDF.FCFS(no_cycles)
+    sstf_edf = algorithms_EDF.SSTF(no_cycles)
 
     for i in range(no_cycles):
         # Generating processes
@@ -65,6 +65,8 @@ def Score(no_cycles: int, no_requests: int, no_real_requests: int, entrance_posi
         sstf.perform_simulaton(copy.deepcopy(requests), copy.deepcopy(disc))
         scan.perform_simulaton(copy.deepcopy(requests), copy.deepcopy(disc))
         cscan.perform_simulaton(copy.deepcopy(requests), copy.deepcopy(disc))
+        fcfs_edf.perform_simulaton(copy.deepcopy(requests), copy.deepcopy(real_time_requests), copy.deepcopy(disc))
+        sstf_edf.perform_simulaton(copy.deepcopy(requests), copy.deepcopy(real_time_requests), copy.deepcopy(disc))
 
         print("Cycle " + str(i) + " finished\n")
 
@@ -72,3 +74,7 @@ def Score(no_cycles: int, no_requests: int, no_real_requests: int, entrance_posi
     print("SSTF average: ", sstf.get_results_many_simulations())
     print("SCAN average: ", scan.get_results_many_simulations())
     print("CSCAN average: ", cscan.get_results_many_simulations())
+    print("FCFS-EDF average: ", fcfs_edf.get_results_many_simulations())
+    print("FCFS-EDF average rejected real time requests: ", fcfs_edf.get_results_many_simulations_rejected())
+    print("SSTF-EDF average: ", sstf_edf.get_results_many_simulations())
+    print("SSTF-EDF average rejected real time requests: ", sstf_edf.get_results_many_simulations_rejected())

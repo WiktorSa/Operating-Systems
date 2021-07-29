@@ -37,6 +37,10 @@ class CSCAN(Algorithm):
             # The disk has moved once
             no_of_seek_operations += 1
 
+            # Increasing waiting time for all waiting_requests
+            for request in waiting_requests:
+                request.waiting_time += 1
+
             # Searching for all requests that will be done when the disc is on the given position
             for request in waiting_requests:
                 if disc.current_position == request.block_position:
@@ -57,10 +61,6 @@ class CSCAN(Algorithm):
                     finished_requests[no_finished_request] = request
                     no_finished_request += 1
                     waiting_requests.remove(request)
-
-            # Increasing waiting time for all waiting_requests
-            for request in waiting_requests:
-                request.waiting_time += 1
 
         print("CSCAN last 15 finished requests")
         for i in range(1, 16):
