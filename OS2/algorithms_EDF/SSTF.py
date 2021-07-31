@@ -40,7 +40,7 @@ class SSTF(Algorithm):
                 no_r_request_wait_arrival += 1
 
             # Processing the real time requests (EDF algorithm)
-            if len(waiting_r_requests) > 0:
+            if len(waiting_r_requests) > 0 and not current_request.is_real_time:
                 waiting_requests.insert(0, current_request)
                 current_request = waiting_r_requests.pop(0)
 
@@ -76,8 +76,7 @@ class SSTF(Algorithm):
                         self.get_argmin_distance_r_requests(waiting_r_requests, disc))
 
                 elif len(waiting_requests) != 0:
-                    current_request = waiting_requests.pop(
-                        self.get_argmin_distance(waiting_requests, disc))
+                    current_request = waiting_requests.pop(self.get_argmin_distance(waiting_requests, disc))
 
             # The real time requests just ran out of time
             if current_request.is_real_time and current_request.waiting_time > current_request.deadline_time:

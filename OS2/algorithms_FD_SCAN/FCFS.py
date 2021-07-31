@@ -1,7 +1,9 @@
+import sys
+
 import numpy as np
 from request.Request import Request
 from disc.Disc import Disc
-from algorithms_EDF.Algorithm import Algorithm
+from algorithms_FD_SCAN.Algorithm import Algorithm
 
 
 # First Come First Served
@@ -39,10 +41,12 @@ class FCFS(Algorithm):
                 waiting_r_requests.append(r_requests[no_r_request_wait_arrival])
                 no_r_request_wait_arrival += 1
 
-            # Processing the real time requests (EDF algorithm)
+            # Processing the real time requests (FD-SCAN algorithm)
             if len(waiting_r_requests) > 0 and not current_request.is_real_time:
-                waiting_requests.insert(0, current_request)
-                current_request = waiting_r_requests.pop(0)
+                index = self.get_argmin_distance_r_requests(waiting_r_requests, disc)
+                if index is not None:
+                    waiting_requests.insert(0, current_request)
+                    current_request = waiting_r_requests.pop(index)
 
             # Move the disc in the proper direction
             disc.current_position += np.sign(current_request.block_position - disc.current_position)
@@ -55,6 +59,11 @@ class FCFS(Algorithm):
 
             # Increasing waiting time for all waiting_requests
             for request in waiting_requests:
+                # FD-SCAN
+                if current_request.is_real_time and request.block_position == disc.current_position:
+                    finished_requests[no_finished_request] = request
+                    no_finished_request += 1
+                    waiting_requests.remove(request)
                 request.waiting_time += 1
 
             for r_request in waiting_r_requests:
@@ -71,27 +80,14 @@ class FCFS(Algorithm):
                 finished_requests[no_finished_request] = current_request
                 no_finished_request += 1
 
-                if len(waiting_r_requests) != 0:
-                    current_request = waiting_r_requests.pop(
-                        self.get_argmin_distance_r_requests(waiting_r_requests, disc))
+                index = self.get_argmin_distance_r_requests(waiting_r_requests, disc)
+                if index is not None:
+                    current_request = waiting_r_requests.pop(index)
 
                 elif len(waiting_requests) != 0:
                     current_request = waiting_requests.pop(0)
 
-            # The real time requests just ran out of time
-            if current_request.is_real_time and current_request.waiting_time > current_request.deadline_time:
-                finished_requests[no_finished_request] = current_request
-                no_finished_request += 1
-                no_of_rejected_r_requests += 1
-
-                if len(waiting_r_requests) != 0:
-                    current_request = waiting_r_requests.pop(
-                        self.get_argmin_distance_r_requests(waiting_r_requests, disc))
-
-                elif len(waiting_requests) != 0:
-                    current_request = waiting_requests.pop(0)
-
-        print("FCFS-EDF last 15 finished requests")
+        print("FCFS-FD-SCAN last 15 finished requests")
         for i in range(1, 16):
             print(finished_requests[-i])
 
