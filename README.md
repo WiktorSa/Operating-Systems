@@ -9,7 +9,7 @@ Implemented algorithms:
 2. Shortest Job First
 3. Round Robin
 
-# 2. Simulation 2 - SO2
+# 2. Simulation 2 - OS2
 Implement different disk scheduling algorithms. Calculate the times it takes for every request to be finished. Include in your simluation that some requests may be real time.
 Implemented algorithms:
 1. First Come First Served
@@ -20,7 +20,7 @@ Implemented algorithms that support real-tinme requests:
 1. EDF
 2. FD-SCAN
 
-# 3. Simulation 3 - SO3
+# 3. Simulation 3 - OS3
 Implement different algorithms of replacing pages. Calculate the average number of error pages for every algorithm
 Implemented algorithms:
 1. First In First Out
@@ -29,7 +29,7 @@ Implemented algorithms:
 4. Approximated LRU
 5. Random
 
-# 4. Simulation 4 - SO4
+# 4. Simulation 4 - OS4
 Implement algorithms that simulates replacing pages for at least 10 different processes. Calculate the average number of error pages for every algorithm
 Implemented algorithms:
 1. Equal Algorithm
